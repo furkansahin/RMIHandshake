@@ -1,4 +1,3 @@
-import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -70,9 +69,9 @@ public class RMIServer extends UnicastRemoteObject implements Server{
     }
 
     public class Pair{
-        public String name;
-        public long time;
-        public Pair(String name, long time)
+        String name;
+        long time;
+        Pair(String name, long time)
         {
             this.name = name;
             this.time = time;

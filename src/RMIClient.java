@@ -24,7 +24,10 @@ public class RMIClient  extends UnicastRemoteObject implements Client {
             registrationList = new ConcurrentHashMap<>();
             handshaked = false;
             lock = new Object();
+
             name = args[0];
+            int timeout = Integer.parseInt(args[1]);
+            System.out.println("My name is: " + name);
 
             String host = "host";
             Registry registry = LocateRegistry.getRegistry(2020);
@@ -32,15 +35,14 @@ public class RMIClient  extends UnicastRemoteObject implements Client {
             Server fObject = (Server) registry.lookup(host);
             registry.rebind(name, myself);
 
-            peerName = fObject.match(name, 10);
+            peerName = fObject.match(name, timeout);
             if (peerName!=null) {
                 Client peerClient = (Client) registry.lookup(peerName);
-                System.out.println(peerName);
-                synchronized (registrationList) {
-                    if (peerName.compareTo(name) < 0) {
-                        handshaked = true;
-                        peerClient.handshake(name);
-                    }
+                System.out.println("my peer's name is: " + peerName);
+
+                if (peerName.compareTo(name) > 0) {
+                    handshaked = true;
+                    peerClient.handshake(name);
                 }
             }
             else {
@@ -58,7 +60,7 @@ public class RMIClient  extends UnicastRemoteObject implements Client {
         Registry registry = LocateRegistry.getRegistry(2020);
         if (name.equals(peerName) && !handshaked)
         {
-            System.out.println("sa");
+            System.out.println("My peer sent me selaminaleykum");
             Client peer = null;
 
             try {
@@ -70,7 +72,7 @@ public class RMIClient  extends UnicastRemoteObject implements Client {
             peer.handshake(name);
         }
         else if(handshaked) {
-            System.out.println("as");
+            System.out.println("I got aleykumselam from my peer.");
             try {
                 registry.unbind(this.name);
             } catch (NotBoundException e) {
